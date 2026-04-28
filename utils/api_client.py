@@ -3,50 +3,61 @@ from flask import current_app
 
 def fetch_news_from_api(category=None):
     """
-    Consome a SerpApi (Google News) de forma robusta.
-    Focado nas categorias que a API consegue processar com alta relevância.
+    Consome a NewsAPI.org de forma robusta.
+    Mapeia categorias em português para os parâmetros da API.
     """
     api_key = current_app.config.get('NEWS_API_KEY')
-    base_url = "https://serpapi.com/search"
     
-    # Se for uma categoria das preferências, usamos como busca direta
-    # Caso contrário, pesquisamos notícias gerais de Portugal
-    query = category if category and category.lower() != 'none' else "notícias portugal"
-    
-    params = {
-        "engine": "google_news",
-        "q": query,
-        "gl": "pt", 
-        "hl": "pt",
-        "api_key": api_key
+    # Mapeamento de categorias PT -> NewsAPI
+    category_map = {
+        'tecnologia': 'technology',
+        'negócios': 'business',
+        'ciência': 'science',
+        'saúde': 'health',
+        'entretenimento': 'entertainment',
+        'desporto': 'sports'
     }
+
+    # Se tivermos uma categoria mapeada, usamos top-headlines
+    # Caso contrário, pesquisamos "notícias portugal"
+    if category and category.lower() in category_map:
+        base_url = "https://newsapi.org/v2/top-headlines"
+        params = {
+            "category": category_map[category.lower()],
+            "country": "pt",
+            "apiKey": api_key
+        }
+    else:
+        base_url = "https://newsapi.org/v2/everything"
+        query = category if category and category.lower() != 'none' else "notícias portugal"
+        params = {
+            "q": query,
+            "language": "pt",
+            "sortBy": "publishedAt",
+            "apiKey": api_key
+        }
 
     try:
         response = requests.get(base_url, params=params, timeout=15)
         response.raise_for_status()
         data = response.json()
         
-        articles = data.get("news_results", [])
+        articles = data.get("articles", [])
         formatted_news = []
 
-        # Aumentado para 20 notícias para um portal rico em conteúdo
         for art in articles[:20]:
-            # Suporte a grupos de histórias
-            if "stories" in art:
-                art = art["stories"][0]
-
             formatted_news.append({
                 "title": art.get("title", "Sem Título"),
-                "content": art.get("snippet") or "Sem descrição disponível.",
-                "url": art.get("link", "#"),
+                "content": art.get("description") or art.get("content") or "Sem descrição disponível.",
+                "url": art.get("url", "#"),
                 "category": category if category else "Geral",
-                "image_url": art.get("thumbnail") or "https://via.placeholder.com/600x400/000/FFCC00?text=NewsAI",
-                "source": art.get("source", {}).get("name", "Google News"),
-                "published_at": art.get("date", "Recentemente")
+                "image_url": art.get("urlToImage") or "https://via.placeholder.com/600x400/000/FFCC00?text=NewsAI",
+                "source": art.get("source", {}).get("name", "NewsAPI"),
+                "published_at": art.get("publishedAt", "Recentemente")
             })
 
         return formatted_news
 
     except Exception as e:
-        print(f"Erro na API (SerpApi): {e}")
+        print(f"Erro na API (NewsAPI): {e}")
         return []
