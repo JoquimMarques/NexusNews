@@ -16,12 +16,11 @@ with app.app_context():
     news = fetch_news_from_api("Tecnologia")
     print(f"Número de notícias encontradas (Tecnologia): {len(news)}")
     
-    print("\nTestando NewsAPI com busca geral 'Portugal'...")
-    news_general = fetch_news_from_api(None)
-    print(f"Número de notícias encontradas (Geral): {len(news_general)}")
+    print("\nTestando NewsAPI com busca 'Tendências IA'...")
+    news_ai = fetch_news_from_api("Tendências IA")
+    print(f"Número de notícias encontradas (Tendências IA): {len(news_ai)}")
     
-    if news_general:
-        print(f"Primeira notícia: {news_general[0]['title']}")
-        print(f"Fonte: {news_general[0]['source']}")
+    if news_ai:
+        print(f"Primeira notícia: {news_ai[0]['title']}")
     else:
-        print("Nenhuma notícia encontrada no geral.")
+        print("Nenhuma notícia encontrada para 'Tendências IA'.")

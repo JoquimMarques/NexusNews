@@ -48,7 +48,7 @@ def news_api():
     # - Sem categoria: usa a primeira preferência (se existir) para personalizar
     # - Categoria "Tudo": devolve feed cheio, agrupado por categorias
     if category and category.strip().lower() == 'tudo':
-        categories = ['Tecnologia', 'Negócios', 'Ciência', 'Saúde', 'Entretenimento', 'Desporto']
+        categories = ['Tecnologia', 'Inteligência Artificial', 'Negócios', 'Ciência', 'Saúde', 'Entretenimento', 'Desporto']
         sections = get_latest_news_grouped(categories, per_category=8)
         return jsonify({"mode": "grouped", "sections": sections})
     elif not category:

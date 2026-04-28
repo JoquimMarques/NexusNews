@@ -18,8 +18,7 @@ def fetch_news_from_api(category=None):
         'desporto': 'sports'
     }
 
-    # Se tivermos uma categoria mapeada, usamos top-headlines
-    # Caso contrário, pesquisamos "notícias portugal"
+    # Se tivermos uma categoria mapeada, tentamos top-headlines primeiro
     if category and category.lower() in category_map:
         base_url = "https://newsapi.org/v2/top-headlines"
         params = {
@@ -27,37 +26,55 @@ def fetch_news_from_api(category=None):
             "country": "pt",
             "apiKey": api_key
         }
-    else:
-        base_url = "https://newsapi.org/v2/everything"
-        query = category if category and category.lower() != 'none' else "notícias portugal"
-        params = {
-            "q": query,
-            "language": "pt",
-            "sortBy": "publishedAt",
-            "apiKey": api_key
-        }
+        try:
+            response = requests.get(base_url, params=params, timeout=10)
+            data = response.json()
+            articles = data.get("articles", [])
+            
+            # Se encontrar notícias, formatamos e devolvemos
+            if articles:
+                return format_articles(articles, category)
+        except Exception as e:
+            print(f"Erro em top-headlines: {e}")
+
+    # Se top-headlines falhar ou não houver categoria, usamos everything
+    base_url = "https://newsapi.org/v2/everything"
+    
+    # Melhorar a query: se for IA, expandir para Inteligência Artificial
+    q = category if category and category.lower() != 'none' else "notícias portugal"
+    if q.lower() == "tecnologia":
+        q = "tecnologia Portugal"
+    elif "ia" in q.lower():
+        q = f'"{q}" OR "inteligência artificial"'
+
+    params = {
+        "q": q,
+        "language": "pt",
+        "sortBy": "relevancy", # Relevância é melhor para buscas específicas
+        "apiKey": api_key
+    }
 
     try:
         response = requests.get(base_url, params=params, timeout=15)
         response.raise_for_status()
         data = response.json()
-        
         articles = data.get("articles", [])
-        formatted_news = []
-
-        for art in articles[:20]:
-            formatted_news.append({
-                "title": art.get("title", "Sem Título"),
-                "content": art.get("description") or art.get("content") or "Sem descrição disponível.",
-                "url": art.get("url", "#"),
-                "category": category if category else "Geral",
-                "image_url": art.get("urlToImage") or "https://via.placeholder.com/600x400/000/FFCC00?text=NewsAI",
-                "source": art.get("source", {}).get("name", "NewsAPI"),
-                "published_at": art.get("publishedAt", "Recentemente")
-            })
-
-        return formatted_news
+        return format_articles(articles, category)
 
     except Exception as e:
-        print(f"Erro na API (NewsAPI): {e}")
+        print(f"Erro na API (NewsAPI Everything): {e}")
         return []
+
+def format_articles(articles, category):
+    formatted_news = []
+    for art in articles[:20]:
+        formatted_news.append({
+            "title": art.get("title", "Sem Título"),
+            "content": art.get("description") or art.get("content") or "Sem descrição disponível.",
+            "url": art.get("url", "#"),
+            "category": category if category else "Geral",
+            "image_url": art.get("urlToImage") or "https://via.placeholder.com/600x400/000/FFCC00?text=NewsAI",
+            "source": art.get("source", {}).get("name", "NewsAPI"),
+            "published_at": art.get("publishedAt", "Recentemente")
+        })
+    return formatted_news
