@@ -27,13 +27,11 @@
         <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
             <i data-lucide="trending-up" class="mr-2 text-blue-600"></i> Destaques do Dia
         </h2>
-        <div id="featured-carousel" class="relative overflow-hidden rounded-2xl bg-gray-900 h-[400px]">
-            <div class="absolute inset-0 flex items-center justify-center text-white p-8 bg-gradient-to-t from-black/80 to-transparent">
-                <div class="max-w-2xl">
-                    <span class="bg-blue-600 text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Tecnologia</span>
-                    <h3 class="text-4xl font-bold mt-4 mb-4">A Inteligência Artificial está mudando o desenvolvimento web em 2026</h3>
-                    <p class="text-gray-300 line-clamp-2">Descubra como as novas ferramentas de IA generativa estão permitindo criar aplicações complexas em tempo recorde.</p>
-                </div>
+        <div id="featured-carousel" class="relative overflow-hidden rounded-2xl bg-gray-900 h-[400px] featured-carousel">
+            <div class="slides" id="featured-container"></div>
+            <div class="carousel-controls">
+                <button id="featured-prev" aria-label="Anterior"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                <button id="featured-next" aria-label="Próximo"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
             </div>
         </div>
     </section>

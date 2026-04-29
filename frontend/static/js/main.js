@@ -126,13 +126,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cabeçalho da Página
         if (mode === 'grouped') {
-            newsContainer.className = 'feed-sections';
-            featuredContainer.innerHTML = `
-                <section class="all-header">
-                    <h1 class="all-title">NexusNews Terminal</h1>
-                    <p class="all-subtitle">Fluxo de notícias em tempo real sintetizado por Nexus AI.</p>
-                </section>
-            `;
+                newsContainer.className = 'feed-sections';
+                // Populate a small header area
+                if (featuredContainer) {
+                    featuredContainer.innerHTML = `
+                        <section class="all-header">
+                            <h1 class="all-title">NexusNews Terminal</h1>
+                            <p class="all-subtitle">Fluxo de notícias em tempo real sintetizado por Nexus AI.</p>
+                        </section>
+                    `;
+                }
             
             newsContainer.innerHTML = sections.map((sec) => `
                 <section class="category-section" data-section="${sec.category}">
@@ -162,6 +165,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Secção de Grandes Destaques Globais no fundo
             if (payload.trending && payload.trending.length > 0) {
+                // also populate featured carousel if present
+                const featuredCarousel = document.getElementById('featured-carousel');
+                const featuredSlides = document.getElementById('featured-container') || document.getElementById('featured-container');
+                if (featuredSlides) {
+                    featuredSlides.innerHTML = payload.trending.map(art => `
+                        <div class="slide js-open-article" data-article="${safeJsonEncode(art)}">
+                            <img src="${art.image_url || 'https://via.placeholder.com/1200x700'}" alt="">
+                            <div class="absolute bottom-4 left-4 text-white">
+                                <span class="bg-black/60 px-3 py-1 rounded text-xs font-bold">${art.category || art.source || 'Destaque'}</span>
+                                <h3 class="text-2xl font-bold mt-2">${art.title}</h3>
+                                <p class="mt-1 text-sm opacity-90">${art.summary ? art.summary.substring(0,140) : ''}</p>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Setup controls
+                    const prev = document.getElementById('featured-prev');
+                    const next = document.getElementById('featured-next');
+                    if (prev && next) {
+                        prev.addEventListener('click', () => { featuredSlides.scrollBy({left: -featuredSlides.clientWidth * 0.6, behavior: 'smooth'}); });
+                        next.addEventListener('click', () => { featuredSlides.scrollBy({left: featuredSlides.clientWidth * 0.6, behavior: 'smooth'}); });
+                    }
+                }
+
                 newsContainer.innerHTML += `
                     <section class="bottom-highlights-section">
                         <div class="category-section-header">
