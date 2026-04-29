@@ -9,7 +9,23 @@ function safeJsonDecode(str) {
         return null;
     }
 }
+const themeToggleBtn = document.getElementById('theme-toggle');
 
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        // Alterna a classe 'dark' no elemento raiz (HTML)
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+
+        // Opcional: Recriar ícones do Lucide se necessário
+        if (window.lucide) lucide.createIcons();
+    });
+}
 window.showToast = function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;

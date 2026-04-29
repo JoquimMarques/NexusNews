@@ -6,6 +6,7 @@
     <title>NexusNews | Inteligência Global</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Lucide Icons for Premium UI -->
+     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -49,6 +50,10 @@
                         <i data-lucide="log-out"></i>
                         <span>Sair</span>
                     </a>
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
+                        <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
+                    </button>
                     {% else %}
                     <a href="{{ url_for('auth.login') }}" class="btn-login">Entrar</a>
                     {% endif %}
@@ -56,6 +61,15 @@
             </div>
         </div>
     </header>
+
+    <script>
+    // Verifica a preferência salva ou o sistema operacional
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+</script>
     
     <script>
         // Initialize Lucide Icons
@@ -68,8 +82,13 @@
       {% if messages %}
         <script>
             document.addEventListener('DOMContentLoaded', () => {
+               // No seu bloco de flash messages, altere para:
                 {% for category, message in messages %}
-                    window.showToast && window.showToast("{{ message }}", "{{ category }}");
+                    if (typeof window.showToast === "function") {
+                        window.showToast("{{ message }}", "{{ category }}");
+                    } else {
+                        console.log("Toast: {{ message }}"); // Fallback se o JS não carregou
+                    }
                 {% endfor %}
             });
         </script>
@@ -77,8 +96,9 @@
     {% endwith %}
 
     <main id="main-content">
-        {% block content %}{% endblock %}
-    </main>
+    {% block content %}
+    {% endblock %}
+</main>
 
     <footer class="main-footer">
         <div class="container">

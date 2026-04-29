@@ -1,32 +1,66 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <!-- Navegação de Categorias Real -->
-    <nav class="categories-nav-wrapper">
-        <button class="carousel-btn prev" type="button" data-action="carousel-prev" aria-label="Anterior">
-            <i data-lucide="chevron-left"></i>
+<div class="container mx-auto px-4 py-6">
+    
+    <nav class="relative flex items-center mb-8">
+        <button class="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 z-10" data-action="carousel-prev">
+            <i data-lucide="chevron-left" class="w-5 h-5 text-gray-700"></i>
         </button>
-        <div class="categories-nav carousel-container" aria-label="Categorias">
+        
+        <div class="flex overflow-x-auto scrollbar-hide space-x-3 px-4 py-2 w-full items-center">
             {% for cat in ['Tudo', 'Mundo', 'Economia', 'Tecnologia', 'IA', 'Ciência', 'Saúde', 'Gaming', 'Cultura', 'Cinema', 'Desporto'] %}
-                <a href="#" class="category-pill {% if loop.first %}active{% endif %}" data-category="{{ cat }}">{{ cat }}</a>
+                <a href="#" class="whitespace-nowrap px-6 py-2 rounded-full text-sm font-medium transition-all
+                   {% if loop.first %} bg-blue-600 text-white shadow-lg shadow-blue-200 {% else %} bg-gray-100 text-gray-600 hover:bg-gray-200 {% endif %}" 
+                   data-category="{{ cat }}">
+                    {{ cat }}
+                </a>
             {% endfor %}
         </div>
-        <button class="carousel-btn next" type="button" data-action="carousel-next" aria-label="Próximo">
-            <i data-lucide="chevron-right"></i>
+
+        <button class="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 z-10" data-action="carousel-next">
+            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-700"></i>
         </button>
     </nav>
 
-    <div class="main-content-full">
-        <!-- Header Dinâmico -->
-        <div id="featured-container">
-            <!-- Injetado via JS -->
+    <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <i data-lucide="trending-up" class="mr-2 text-blue-600"></i> Destaques do Dia
+        </h2>
+        <div id="featured-carousel" class="relative overflow-hidden rounded-2xl bg-gray-900 h-[400px]">
+            <div class="absolute inset-0 flex items-center justify-center text-white p-8 bg-gradient-to-t from-black/80 to-transparent">
+                <div class="max-w-2xl">
+                    <span class="bg-blue-600 text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Tecnologia</span>
+                    <h3 class="text-4xl font-bold mt-4 mb-4">A Inteligência Artificial está mudando o desenvolvimento web em 2026</h3>
+                    <p class="text-gray-300 line-clamp-2">Descubra como as novas ferramentas de IA generativa estão permitindo criar aplicações complexas em tempo recorde.</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <!-- Feed de Notícias -->
-        <div id="news-container">
-            <!-- Injetado via JS -->
+    <section>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Últimas Notícias</h2>
+        <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://via.placeholder.com/400x200" alt="News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute top-3 left-3">
+                        <span class="bg-white/90 backdrop-blur text-xs font-bold px-2 py-1 rounded shadow text-gray-800">Economia</span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h4 class="font-bold text-lg text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 cursor-pointer">Mercado global reage positivamente às novas políticas de sustentabilidade</h4>
+                    <p class="text-gray-600 text-sm line-clamp-3 mb-4">Analistas preveem um crescimento de 5% no setor de energias renováveis no próximo trimestre...</p>
+                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                        <span class="text-xs text-gray-400">Há 2 horas</span>
+                        <button class="text-blue-600 hover:text-blue-800">
+                            <i data-lucide="bookmark" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
 </div>
+
 {% endblock %}
