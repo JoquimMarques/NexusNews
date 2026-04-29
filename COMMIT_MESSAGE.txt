@@ -1,0 +1,3 @@
+Primeira versão do NexusNews
+
+Inclui app Flask, portal (templates/CSS/JS) e configuração via variáveis de ambiente.

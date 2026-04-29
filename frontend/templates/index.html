@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Navegação de Categorias Real -->
+    <nav class="categories-nav categories-carousel" aria-label="Categorias">
+        <button class="carousel-btn prev" type="button" data-action="carousel-prev" aria-label="Categorias anteriores">‹</button>
+        {% for cat in ['Tudo', 'Tecnologia', 'Negócios', 'Ciência', 'Saúde', 'Entretenimento', 'Desporto'] %}
+            <a href="#" class="category-pill {% if loop.first %}active{% endif %}" data-category="{{ cat }}">{{ cat }}</a>
+        {% endfor %}
+        <button class="carousel-btn next" type="button" data-action="carousel-next" aria-label="Categorias seguintes">›</button>
+    </nav>
+
+    <div class="portal-layout">
+        <!-- Coluna Principal -->
+        <div class="main-content">
+            <!-- Headline (Notícia de Destaque) -->
+            <div id="featured-container">
+                <!-- Injetado via JS -->
+            </div>
+
+            <!-- Feed de Notícias Secundárias -->
+            <div id="news-container">
+                <!-- Injetado via JS -->
+            </div>
+        </div>
+
+        <!-- Sidebar de Tendências -->
+        <aside class="trending-sidebar">
+            <h3>Tendências IA</h3>
+            <div id="trending-container">
+                <!-- Injetado via JS -->
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

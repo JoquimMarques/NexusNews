@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container container-narrow section-lg">
+    <div class="section-header">
+        <h1 class="page-title">O que quer ler?</h1>
+        <p class="page-subtitle">Selecione as categorias para personalizar o seu feed.</p>
+    </div>
+
+    <form method="POST">
+        <div class="preferences-list">
+            {% for cat in ['Tecnologia', 'Negócios', 'Ciência', 'Saúde', 'Entretenimento', 'Desporto', 'Inteligência Artificial'] %}
+            <label class="pref-item">
+                <input class="pref-checkbox" type="checkbox" name="categories" value="{{ cat }}">
+                <span class="pref-label">{{ cat }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn-primary btn-block btn-lg" style="margin-top: 28px;">Começar a explorar</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsAI | Inteligência Global</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Notificações Toast -->
+    <div id="toast-container"></div>
+
+    <header class="navbar">
+        <div class="container">
+            <a href="/" class="logo">News<span>AI</span></a>
+            
+            <nav class="nav-links">
+                <a href="/">Início</a>
+                {% if current_user.is_authenticated %}
+                    <a href="/favorites">Favoritos</a>
+                    <a href="/dashboard">Perfil</a>
+                {% endif %}
+            </nav>
+
+            <div class="header-actions">
+                {% if current_user.is_authenticated %}
+                <div class="search-box">
+                    <input type="text" id="global-search" placeholder="Pesquisar com IA...">
+                    <button id="search-btn">🔍</button>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="logout-link">Sair</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn-primary" style="padding: 10px 20px; font-size: 0.8rem;">Entrar</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                {% for category, message in messages %}
+                    window.showToast && window.showToast("{{ message }}", "{{ category }}");
+                {% endfor %}
+            });
+        </script>
+      {% endif %}
+    {% endwith %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2026 NewsAI. Powered by Gemini.</p>
+        </div>
+    </footer>
+
+    <!-- Modal de Notícia -->
+    <div id="news-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
