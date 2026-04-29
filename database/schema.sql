@@ -1,6 +1,5 @@
 -- Esquema SQLite para Agregador de Notícias
 
-
 -- Tabela de Utilizadores
 CREATE TABLE IF NOT EXISTS user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

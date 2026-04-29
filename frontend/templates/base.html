@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusNews | Inteligência Global</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Lucide Icons for Premium UI -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Overlay de Carregamento NexusNews -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loader-content">
+            <div class="nexus-spinner"></div>
+            <h1 class="loader-logo">Nexus<span>News</span></h1>
+        </div>
+    </div>
+
+    <!-- Notificações Toast -->
+    <div id="toast-container"></div>
+
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">Nexus<span>News</span></a>
+            
+            <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="Menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+
+            <div class="nav-wrapper" id="nav-wrapper">
+                <nav class="nav-links">
+                    <a href="/" class="nav-item">Início</a>
+                    {% if current_user.is_authenticated %}
+                        <a href="/favorites" class="nav-item">Favoritos</a>
+                        <a href="/dashboard" class="nav-item">Perfil</a>
+                    {% endif %}
+                </nav>
+
+                <div class="header-actions">
+                    {% if current_user.is_authenticated %}
+                    <div class="search-box">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" id="global-search" placeholder="Descobrir...">
+                    </div>
+                    <a href="{{ url_for('auth.logout') }}" class="btn-logout">
+                        <i data-lucide="log-out"></i>
+                        <span>Sair</span>
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn-login">Entrar</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <script>
+        // Initialize Lucide Icons
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+        });
+    </script>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                {% for category, message in messages %}
+                    window.showToast && window.showToast("{{ message }}", "{{ category }}");
+                {% endfor %}
+            });
+        </script>
+      {% endif %}
+    {% endwith %}
+
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2026 NexusNews. Powered by Gemini & Nexus Engine.</p>
+        </div>
+    </footer>
+
+    <!-- Modal de Notícia -->
+    <div id="news-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

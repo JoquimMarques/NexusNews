@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <section class="hero" style="border-bottom: none;">
+        <h1>Seus Favoritos</h1>
+        <p>Artigos que guardou para leitura posterior.</p>
+    </section>
+
+    <div class="news-grid" id="favorites-container">
+        {% for article in favorites %}
+        <article class="news-card" id="fav-card-{{ article.id }}">
+            <div class="card-image-wrapper">
+                <span class="card-badge">{{ article.category }}</span>
+                <img src="{{ article.image_url or 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800' }}" alt="{{ article.title }}">
+            </div>
+            <div class="card-body">
+                <div class="card-meta">
+                    <span class="card-source">{{ article.source }}</span>
+                    <span class="card-date">{{ article.published_at }}</span>
+                </div>
+                <h2 class="card-title">{{ article.title }}</h2>
+                <p class="card-description">{{ article.ai_summary }}</p>
+                <div class="card-footer" style="display: flex; gap: 10px;">
+                    <a href="{{ article.url }}" class="read-more-btn" target="_blank" rel="noreferrer" style="flex-grow: 1;">Ler tudo</a>
+                    <button onclick="removeFavorite({{ article.id }})" class="btn-secondary btn-danger" style="padding: 10px;">Remover</button>
+                </div>
+            </div>
+        </article>
+        {% else %}
+        <div style="grid-column: 1/-1; text-align: center; padding: 100px 0; border: 2px dashed #333;">
+            <h3>Ainda não guardou nenhum artigo.</h3>
+            <p>Explore o feed e guarde as notícias que mais gosta!</p>
+            <a href="/" class="read-more-btn" style="margin-top: 20px; display: inline-block;">Voltar ao Início</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+async function removeFavorite(articleId) {
+    if(!confirm('Deseja remover este artigo dos favoritos?')) return;
+    
+    try {
+        const response = await fetch(`/api/favorite/remove/${articleId}`, { method: 'POST' });
+        const result = await response.json();
+        if(result.success) {
+            document.getElementById(`fav-card-${articleId}`).remove();
+            if(document.querySelectorAll('.news-card').length === 0) {
+                location.reload(); // Recarrega para mostrar a mensagem de vazio
+            }
+        }
+    } catch (e) {
+        alert('Erro ao remover favorito.');
+    }
+}
+</script>
+{% endblock %}

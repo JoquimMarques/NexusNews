@@ -3,74 +3,20 @@
 {% block content %}
 <div class="container">
     <div class="profile-wrapper">
-        <div class="profile-header">
-            <div class="profile-avatar">
-                {{ current_user.username[0]|upper }}
-            </div>
-            <div class="profile-info">
-                <h1 class="profile-greeting">Olá, {{ current_user.username }}!</h1>
-                <p class="profile-subtitle">Esta é a sua central de inteligência.</p>
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <span class="stat-value">{{ current_user.favorite_articles|length }}</span>
-                        <span class="stat-label">Favoritos</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">{{ current_user.preferences.split(',')|length if current_user.preferences else 0 }}</span>
-                        <span class="stat-label">Categorias</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h1>Olá, {{ current_user.username }}!</h1>
+        <p>Esta é a sua central de inteligência.</p>
         
         <div class="profile-grid">
             <div class="profile-card">
-                <div class="profile-card-header">
-                    <h3 class="profile-card-title">
-                        <div class="profile-card-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                            </svg>
-                        </div>
-                        Suas Preferências
-                    </h3>
-                </div>
-                <div class="profile-card-content">
-                    {% if current_user.preferences %}
-                        <strong>Temas selecionados:</strong><br>
-                        {{ current_user.preferences }}
-                    {% else %}
-                        Nenhuma preferência definida ainda.
-                    {% endif %}
-                </div>
-                <a href="/preferences" class="profile-card-link">
-                    Editar Temas
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                </a>
+                <h3>Suas Preferências</h3>
+                <p>{{ current_user.preferences or 'Nenhuma preferência definida.' }}</p>
+                <a href="/preferences">Editar Temas →</a>
             </div>
             
             <div class="profile-card">
-                <div class="profile-card-header">
-                    <h3 class="profile-card-title">
-                        <div class="profile-card-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                            </svg>
-                        </div>
-                        Artigos Guardados
-                    </h3>
-                </div>
-                <div class="profile-card-content">
-                    Você tem <strong>{{ current_user.favorite_articles|length }} artigos</strong> guardados nos seus favoritos.
-                </div>
-                <a href="/favorites" class="profile-card-link">
-                    Ver Favoritos
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                </a>
+                <h3>Artigos Guardados</h3>
+                <p>Tem {{ current_user.favorite_articles|length }} artigos guardados nos favoritos.</p>
+                <a href="/favorites">Ver Favoritos →</a>
             </div>
         </div>
     </div>
