@@ -7,14 +7,11 @@ from .models import db, NewsArticle
 main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
-@login_required
 def index():
     """
-    Página Principal. 
-    Verifica se o utilizador tem preferências; se não, envia para o onboarding.
+    Página Principal.
+    Permite que visitantes explorem categorias e notícias sem precisar de login.
     """
-    if not current_user.preferences:
-        return redirect(url_for('main.preferences'))
     return render_template('index.html')
 
 @main_bp.route('/dashboard')
@@ -39,28 +36,35 @@ def preferences():
     return render_template('preferences.html')
 
 @main_bp.route('/news')
-@login_required
 def news_api():
-    """Endpoint JSON que retorna notícias baseadas nas preferências ou categoria selecionada."""
+    """Endpoint JSON público que retorna notícias baseadas na categoria selecionada."""
     category = request.args.get('category')
     
     # Regras:
-    # - Sem categoria: usa a primeira preferência (se existir) para personalizar
-    # - Categoria "Tudo": devolve feed cheio, agrupado por categorias
+    # - Sem categoria ou categoria "Tudo": devolve feed cheio, agrupado por categorias
+    # - Categoria específica: devolve notícias dessa categoria
     if category and category.strip().lower() == 'tudo':
         categories = ['Mundo', 'Economia', 'Tecnologia', 'IA', 'Ciência', 'Saúde', 'Gaming', 'Cultura', 'Cinema', 'Desporto']
         sections = get_latest_news_grouped(categories, per_category=40)
-        # Obter notícias misturadas para o carrossel de destaques no fundo
         trending = get_latest_news_mixed(categories, limit=12)
         return jsonify({"mode": "grouped", "sections": sections, "trending": trending})
+    elif category and category.strip().lower() == 'para mim':
+        if current_user.is_authenticated and current_user.preferences:
+            categories = current_user.preferences.split(',')
+            sections = get_latest_news_grouped(categories, per_category=40)
+            trending = get_latest_news_mixed(categories, limit=12)
+            return jsonify({"mode": "grouped", "sections": sections, "trending": trending})
+        else:
+            categories = ['Mundo', 'Economia', 'Tecnologia', 'IA', 'Ciência', 'Saúde', 'Gaming', 'Cultura', 'Cinema', 'Desporto']
+            sections = get_latest_news_grouped(categories, per_category=40)
+            trending = get_latest_news_mixed(categories, limit=12)
+            return jsonify({"mode": "grouped", "sections": sections, "trending": trending})
     elif not category:
-        # Padrão: Se não houver categoria, carrega o "Tudo"
         categories = ['Mundo', 'Economia', 'Tecnologia', 'IA', 'Ciência', 'Saúde', 'Gaming', 'Cultura', 'Cinema', 'Desporto']
         sections = get_latest_news_grouped(categories, per_category=40)
         trending = get_latest_news_mixed(categories, limit=12)
         return jsonify({"mode": "grouped", "sections": sections, "trending": trending})
     else:
-        # Carregar uma categoria individual
         news = get_latest_news(category)
         return jsonify({"mode": "flat", "items": news})
 @main_bp.route('/favorites')

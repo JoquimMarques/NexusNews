@@ -20,6 +20,8 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             flash('Bem-vindo ao NewsAI!', 'success')
+            if not user.preferences:
+                return redirect(url_for('main.preferences'))
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('main.index'))
         else:
@@ -48,8 +50,9 @@ def register():
             new_user.set_password(password)
             db.session.add(new_user)
             db.session.commit()
-            flash('Conta criada com sucesso! Pode agora fazer login.', 'success')
-            return redirect(url_for('auth.login'))
+            login_user(new_user)
+            flash('Conta criada com sucesso! Agora escolha os seus interesses.', 'success')
+            return redirect(url_for('main.preferences'))
             
     return render_template('register.html')
 
@@ -58,4 +61,4 @@ def register():
 def logout():
     logout_user()
     flash('Sessão encerrada.', 'info')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.index'))

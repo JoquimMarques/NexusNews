@@ -1,24 +1,107 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <div class="profile-wrapper">
-        <h1>Olá, {{ current_user.username }}!</h1>
-        <p>Esta é a sua central de inteligência.</p>
-        
-        <div class="profile-grid">
-            <div class="profile-card">
-                <h3>Suas Preferências</h3>
-                <p>{{ current_user.preferences or 'Nenhuma preferência definida.' }}</p>
-                <a href="/preferences">Editar Temas →</a>
+<div class="profile-page container">
+
+    <!-- BANNER / HERO DO PERFIL -->
+    <div class="profile-hero">
+        <div class="profile-hero-bg"></div>
+        <div class="profile-hero-content">
+            <div class="profile-avatar-wrap">
+                <div class="profile-avatar">{{ current_user.username[0] | upper }}</div>
+                <div class="profile-avatar-ring"></div>
             </div>
-            
-            <div class="profile-card">
-                <h3>Artigos Guardados</h3>
-                <p>Tem {{ current_user.favorite_articles|length }} artigos guardados nos favoritos.</p>
-                <a href="/favorites">Ver Favoritos →</a>
+            <div class="profile-hero-text">
+                <h1 class="profile-name">{{ current_user.username }}</h1>
+                <p class="profile-email">
+                    <i data-lucide="mail" class="profile-email-icon"></i>
+                    {{ current_user.email }}
+                </p>
             </div>
         </div>
     </div>
+
+    <!-- ESTATÍSTICAS -->
+    <div class="profile-stats-grid">
+        <div class="profile-stat-card">
+            <div class="stat-icon-wrap stat-purple">
+                <i data-lucide="bookmark"></i>
+            </div>
+            <div class="stat-data">
+                <span class="stat-number">{{ current_user.favorite_articles | length }}</span>
+                <span class="stat-label">Artigos Guardados</span>
+            </div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="stat-icon-wrap stat-indigo">
+                <i data-lucide="layout-grid"></i>
+            </div>
+            <div class="stat-data">
+                {% if current_user.preferences %}
+                    <span class="stat-number">{{ current_user.preferences.split(',') | length }}</span>
+                {% else %}
+                    <span class="stat-number">0</span>
+                {% endif %}
+                <span class="stat-label">Categorias Seguidas</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORIAS -->
+    <div class="profile-card">
+        <div class="profile-card-header">
+            <div class="profile-card-title-wrap">
+                <div class="profile-card-icon">
+                    <i data-lucide="tag"></i>
+                </div>
+                <h2 class="profile-card-title">Os meus Interesses</h2>
+            </div>
+            <a href="/preferences" class="btn-edit-pref">
+                <i data-lucide="pencil"></i>
+                Editar
+            </a>
+        </div>
+        <div class="profile-tags">
+            {% if current_user.preferences %}
+                {% for cat in current_user.preferences.split(',') %}
+                    {% if cat.strip() %}
+                    <span class="profile-tag">{{ cat.strip() }}</span>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="profile-empty-cats">
+                    <i data-lucide="inbox"></i>
+                    <p>Ainda não escolheu temas. <a href="/preferences">Escolher agora →</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ACÇÕES RÁPIDAS -->
+    <div class="profile-card">
+        <div class="profile-card-header" style="margin-bottom: 20px;">
+            <div class="profile-card-title-wrap">
+                <div class="profile-card-icon">
+                    <i data-lucide="zap"></i>
+                </div>
+                <h2 class="profile-card-title">Acções Rápidas</h2>
+            </div>
+        </div>
+        <div class="quick-actions">
+            <a href="/favorites" class="quick-action-btn qa-blue">
+                <i data-lucide="bookmarks"></i>
+                <span>Ver Favoritos</span>
+            </a>
+            <a href="/preferences" class="quick-action-btn qa-violet">
+                <i data-lucide="sliders-horizontal"></i>
+                <span>Preferências</span>
+            </a>
+            <a href="/" class="quick-action-btn qa-slate">
+                <i data-lucide="newspaper"></i>
+                <span>Feed de Notícias</span>
+            </a>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

@@ -1,23 +1,70 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container container-narrow section-lg">
-    <div class="section-header">
-        <h1 class="page-title">O que quer ler?</h1>
-        <p class="page-subtitle">Selecione as categorias para personalizar o seu feed.</p>
+<div class="onboarding-page">
+
+    <!-- CABEÇALHO DO ONBOARDING -->
+    <div class="onboarding-header">
+        <div class="onboarding-step-badge">Passo 1 de 1</div>
+        <h1 class="onboarding-title">O que quer ler?</h1>
+        <p class="onboarding-sub">Selecione pelo menos uma categoria para personalizar o seu feed de notícias.</p>
     </div>
 
-    <form method="POST">
-        <div class="preferences-list">
-            {% for cat in ['Tecnologia', 'Negócios', 'Ciência', 'Saúde', 'Entretenimento', 'Desporto', 'Inteligência Artificial'] %}
-            <label class="pref-item">
-                <input class="pref-checkbox" type="checkbox" name="categories" value="{{ cat }}">
-                <span class="pref-label">{{ cat }}</span>
+    <form method="POST" class="onboarding-form">
+
+        <!-- GRID DE CATEGORIAS -->
+        <div class="onboarding-grid">
+
+            {% set categories = [
+                ('Tecnologia',      'cpu',          'Inovação & Gadgets'),
+                ('Negócios',        'trending-up',  'Mercados & Empresas'),
+                ('Ciência',         'flask-conical','Pesquisa & Descobertas'),
+                ('Saúde',           'heart-pulse',  'Bem-estar & Medicina'),
+                ('Entretenimento',  'clapperboard', 'Arte, Cultura & Shows'),
+                ('Desporto',        'trophy',       'Atletas, Resultados & Competições')
+            ] %}
+
+            {% for cat, icon, desc in categories %}
+            <label class="onboarding-card" for="cat-{{ cat }}">
+                <input class="onboarding-checkbox" type="checkbox"
+                       id="cat-{{ cat }}" name="categories" value="{{ cat }}">
+                <div class="onboarding-card-inner">
+                    <div class="onboarding-card-icon">
+                        <i data-lucide="{{ icon }}"></i>
+                    </div>
+                    <div class="onboarding-card-text">
+                        <span class="onboarding-card-name">{{ cat }}</span>
+                        <span class="onboarding-card-desc">{{ desc }}</span>
+                    </div>
+                    <div class="onboarding-card-check">
+                        <i data-lucide="check"></i>
+                    </div>
+                </div>
             </label>
             {% endfor %}
+
         </div>
 
-        <button type="submit" class="btn-primary btn-block btn-lg" style="margin-top: 28px;">Começar a explorar</button>
+        <div class="onboarding-footer">
+            <p class="onboarding-hint">
+                <i data-lucide="info"></i>
+                Pode alterar as suas preferências a qualquer momento no perfil.
+            </p>
+            <button type="submit" class="onboarding-submit">
+                <i data-lucide="rocket"></i>
+                Começar a Explorar
+            </button>
+        </div>
+
     </form>
 </div>
+
+<script>
+// Adiciona classe visual ao cartão quando checkbox é selecionado
+document.querySelectorAll('.onboarding-checkbox').forEach(cb => {
+    cb.addEventListener('change', () => {
+        cb.closest('.onboarding-card').classList.toggle('is-selected', cb.checked);
+    });
+});
+</script>
 {% endblock %}

@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Lucide Icons for Premium UI -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Aplicar tema escuro/claro imediatamente para evitar "flash"
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
 </head>
 <body>
     <!-- Overlay de Carregamento NexusNews -->
@@ -20,6 +25,10 @@
     <!-- Notificações Toast -->
     <div id="toast-container"></div>
 
+    <script>
+        window.isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+    </script>
+
     <header class="navbar">
         <div class="container nav-container">
             <a href="/" class="logo">Nexus<span>News</span></a>
@@ -32,14 +41,18 @@
 
             <div class="nav-wrapper" id="nav-wrapper">
                 <nav class="nav-links">
-                    <a href="/" class="nav-item">Início</a>
+                    <a href="/" class="nav-item"><i data-lucide="home"></i> Início</a>
                     {% if current_user.is_authenticated %}
-                        <a href="/favorites" class="nav-item">Favoritos</a>
-                        <a href="/dashboard" class="nav-item">Perfil</a>
+                        <a href="/favorites" class="nav-item"><i data-lucide="bookmark"></i> Favoritos</a>
+                        <a href="/dashboard" class="nav-item"><i data-lucide="user"></i> Perfil</a>
                     {% endif %}
                 </nav>
 
                 <div class="header-actions">
+                    <button id="theme-toggle" class="btn-theme-toggle" aria-label="Alternar Tema">
+                        <i data-lucide="moon" class="icon-moon"></i>
+                        <i data-lucide="sun" class="icon-sun"></i>
+                    </button>
                     {% if current_user.is_authenticated %}
                     <div class="search-box">
                         <i data-lucide="search" class="search-icon"></i>
@@ -82,7 +95,7 @@
 
     <footer class="main-footer">
         <div class="container">
-            <p>&copy; 2026 NexusNews. Powered by Gemini & Nexus Engine.</p>
+            <p>&copy; 2026 NexusNews - Todos os direitos reservados.</p>
         </div>
     </footer>
 

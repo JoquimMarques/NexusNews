@@ -1,54 +1,109 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <section class="hero" style="border-bottom: none;">
-        <h1>Seus Favoritos</h1>
-        <p>Artigos que guardou para leitura posterior.</p>
-    </section>
+<div class="favorites-page container">
 
-    <div class="news-grid" id="favorites-container">
+    <!-- CABEÇALHO COM GRADIENTE -->
+    <div class="fav-hero">
+        <div class="fav-hero-text">
+            <h1 class="fav-hero-title">
+                <i data-lucide="bookmark-check" class="fav-hero-icon"></i>
+                Os meus Favoritos
+            </h1>
+            <p class="fav-hero-sub">Artigos que guardou para leitura posterior.</p>
+        </div>
+        <div class="fav-hero-badge">
+            <span class="fav-badge-num">{{ favorites | length }}</span>
+            <span class="fav-badge-label">Artigo{{ 's' if favorites | length != 1 else '' }}</span>
+        </div>
+    </div>
+
+    <!-- GRID DE CARTÕES -->
+    <div class="fav-grid" id="favorites-container">
         {% for article in favorites %}
-        <article class="news-card" id="fav-card-{{ article.id }}">
-            <div class="card-image-wrapper">
-                <span class="card-badge">{{ article.category }}</span>
-                <img src="{{ article.image_url or 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800' }}" alt="{{ article.title }}">
-            </div>
-            <div class="card-body">
-                <div class="card-meta">
-                    <span class="card-source">{{ article.source }}</span>
-                    <span class="card-date">{{ article.published_at }}</span>
+        <article class="fav-card" id="fav-card-{{ article.id }}">
+
+            <!-- IMAGEM -->
+            <div class="fav-card-img-wrap">
+                <img
+                    src="{{ article.image_url or 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800' }}"
+                    alt="{{ article.title }}"
+                    loading="lazy"
+                >
+                <div class="fav-card-overlay">
+                    <span class="fav-cat-badge">{{ article.category }}</span>
                 </div>
-                <h2 class="card-title">{{ article.title }}</h2>
-                <p class="card-description">{{ article.ai_summary }}</p>
-                <div class="card-footer" style="display: flex; gap: 10px;">
-                    <a href="{{ article.url }}" class="read-more-btn" target="_blank" rel="noreferrer" style="flex-grow: 1;">Ler tudo</a>
-                    <button onclick="removeFavorite({{ article.id }})" class="btn-secondary btn-danger" style="padding: 10px;">Remover</button>
+            </div>
+
+            <!-- CORPO -->
+            <div class="fav-card-body">
+                <div class="fav-card-meta">
+                    <span class="fav-meta-source">
+                        <i data-lucide="radio" class="fav-meta-icon"></i>
+                        {{ article.source }}
+                    </span>
+                    <span class="fav-meta-date">{{ article.published_at }}</span>
+                </div>
+
+                <h2 class="fav-card-title">{{ article.title }}</h2>
+
+                {% if article.ai_summary %}
+                <div class="fav-ai-summary">
+                    <span class="fav-ai-label">
+                        <i data-lucide="sparkles"></i> IA
+                    </span>
+                    <p>{{ article.ai_summary }}</p>
+                </div>
+                {% endif %}
+
+                <div class="fav-card-footer">
+                    <a href="{{ article.url }}" class="fav-btn-read" target="_blank" rel="noreferrer">
+                        <i data-lucide="external-link"></i>
+                        Ler artigo
+                    </a>
+                    <button onclick="removeFavorite({{ article.id }})" class="fav-btn-remove" title="Remover dos favoritos">
+                        <i data-lucide="trash-2"></i>
+                    </button>
                 </div>
             </div>
         </article>
         {% else %}
-        <div style="grid-column: 1/-1; text-align: center; padding: 100px 0; border: 2px dashed #333;">
-            <h3>Ainda não guardou nenhum artigo.</h3>
-            <p>Explore o feed e guarde as notícias que mais gosta!</p>
-            <a href="/" class="read-more-btn" style="margin-top: 20px; display: inline-block;">Voltar ao Início</a>
+
+        <!-- ESTADO VAZIO -->
+        <div class="fav-empty-state">
+            <div class="fav-empty-visual">
+                <div class="fav-empty-circle">
+                    <i data-lucide="bookmark-x"></i>
+                </div>
+                <div class="fav-empty-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+            <h3 class="fav-empty-title">A sua lista está vazia</h3>
+            <p class="fav-empty-desc">Explore o feed e clique em <strong>Guardar</strong> para adicionar artigos aqui.</p>
+            <a href="/" class="fav-btn-go">
+                <i data-lucide="newspaper"></i>
+                Ir ao Feed de Notícias
+            </a>
         </div>
+
         {% endfor %}
     </div>
 </div>
 
 <script>
 async function removeFavorite(articleId) {
-    if(!confirm('Deseja remover este artigo dos favoritos?')) return;
-    
+    if (!confirm('Deseja remover este artigo dos favoritos?')) return;
     try {
-        const response = await fetch(`/api/favorite/remove/${articleId}`, { method: 'POST' });
-        const result = await response.json();
-        if(result.success) {
-            document.getElementById(`fav-card-${articleId}`).remove();
-            if(document.querySelectorAll('.news-card').length === 0) {
-                location.reload(); // Recarrega para mostrar a mensagem de vazio
-            }
+        const res = await fetch(`/api/favorite/remove/${articleId}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+            const card = document.getElementById(`fav-card-${articleId}`);
+            card.classList.add('fav-card--removing');
+            setTimeout(() => {
+                card.remove();
+                if (document.querySelectorAll('.fav-card').length === 0) location.reload();
+            }, 400);
         }
     } catch (e) {
         alert('Erro ao remover favorito.');

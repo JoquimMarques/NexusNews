@@ -8,9 +8,19 @@
             <i data-lucide="chevron-left"></i>
         </button>
         <div class="categories-nav carousel-container" aria-label="Categorias">
-            {% for cat in ['Tudo', 'Mundo', 'Economia', 'Tecnologia', 'IA', 'Ciência', 'Saúde', 'Gaming', 'Cultura', 'Cinema', 'Desporto'] %}
-                <a href="#" class="category-pill {% if loop.first %}active{% endif %}" data-category="{{ cat }}">{{ cat }}</a>
-            {% endfor %}
+            {% if current_user.is_authenticated and current_user.preferences %}
+                {% set all_cats = ['Mundo', 'Economia', 'Tecnologia', 'IA', 'Ciência', 'Saúde', 'Gaming', 'Cultura', 'Cinema', 'Desporto'] %}
+                
+                <a href="#" class="category-pill active" data-category="Para mim">Para mim</a>
+                
+                {% for cat in all_cats %}
+                    <a href="#" class="category-pill" data-category="{{ cat }}">{{ cat }}</a>
+                {% endfor %}
+            {% else %}
+                {% for cat in ['Tudo', 'Mundo', 'Economia', 'Tecnologia', 'IA', 'Ciência', 'Saúde', 'Gaming', 'Cultura', 'Cinema', 'Desporto'] %}
+                    <a href="#" class="category-pill {% if loop.first %}active{% endif %}" data-category="{{ cat }}">{{ cat }}</a>
+                {% endfor %}
+            {% endif %}
         </div>
         <button class="carousel-btn next" type="button" data-action="carousel-next" aria-label="Próximo">
             <i data-lucide="chevron-right"></i>

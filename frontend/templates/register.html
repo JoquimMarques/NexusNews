@@ -2,29 +2,82 @@
 
 {% block content %}
 <div class="auth-page">
-    <div class="auth-form">
-        <h2>Criar Conta</h2>
-        <form action="{{ url_for('auth.register') }}" method="post">
-            <div class="form-group">
-                <label for="username">Nome de Utilizador</label>
-                <input type="text" id="username" name="username" placeholder="Seu Nome" required>
-            </div>
 
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" name="email" placeholder="email@exemplo.com" required>
+    <!-- PAINEL ESQUERDO — decorativo -->
+    <div class="auth-panel auth-panel--register">
+        <div class="auth-panel-logo">
+            <span class="auth-panel-logo-text">Nexus<span>News</span></span>
+        </div>
+        <div class="auth-panel-headline">
+            <h2>Junte-se à revolução informativa.</h2>
+            <p>Crie a sua conta e deixe a IA curar as notícias para si.</p>
+        </div>
+        <div class="auth-panel-features">
+            <div class="auth-feature">
+                <i data-lucide="brain-circuit"></i>
+                <span>Feed personalizado por IA</span>
             </div>
-            
-            <div class="form-group">
-                <label for="password">Palavra-passe</label>
-                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            <div class="auth-feature">
+                <i data-lucide="bookmark"></i>
+                <span>Guarde os seus artigos favoritos</span>
             </div>
-
-            <button type="submit" class="btn-primary">Criar Perfil IA</button>
-        </form>
-        <p style="text-align: center; margin-top: 30px; font-size: 0.85rem; color: #666;">
-            Já tem conta? <a href="{{ url_for('auth.login') }}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Faça Login</a>
-        </p>
+            <div class="auth-feature">
+                <i data-lucide="globe"></i>
+                <span>Notícias de todo o mundo</span>
+            </div>
+        </div>
     </div>
+
+    <!-- PAINEL DIREITO — formulário -->
+    <div class="auth-form-panel">
+        <div class="auth-form-box">
+
+            <div class="auth-form-header">
+                <div class="auth-form-icon">
+                    <i data-lucide="user-plus"></i>
+                </div>
+                <h1 class="auth-form-title">Criar Conta</h1>
+                <p class="auth-form-sub">Começa grátis, em menos de 1 minuto</p>
+            </div>
+
+            <form action="{{ url_for('auth.register') }}" method="post" class="auth-form">
+
+                <div class="auth-field">
+                    <label class="auth-label" for="username">
+                        <i data-lucide="user"></i> Nome de Utilizador
+                    </label>
+                    <input class="auth-input" type="text" id="username" name="username"
+                           placeholder="O seu nome" required autocomplete="username">
+                </div>
+
+                <div class="auth-field">
+                    <label class="auth-label" for="email">
+                        <i data-lucide="mail"></i> E-mail
+                    </label>
+                    <input class="auth-input" type="email" id="email" name="email"
+                           placeholder="email@exemplo.com" required autocomplete="email">
+                </div>
+
+                <div class="auth-field">
+                    <label class="auth-label" for="password">
+                        <i data-lucide="lock"></i> Palavra-passe
+                    </label>
+                    <input class="auth-input" type="password" id="password" name="password"
+                           placeholder="••••••••" required autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="auth-submit-btn auth-submit-btn--register">
+                    <i data-lucide="sparkles"></i>
+                    Criar Perfil
+                </button>
+            </form>
+
+            <p class="auth-switch">
+                Já tem conta?
+                <a href="{{ url_for('auth.login') }}">Faça Login</a>
+            </p>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

@@ -14,18 +14,41 @@ window.showToast = function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
 
+    const icons = {
+        'success': 'check-circle',
+        'error': 'alert-circle',
+        'info': 'info'
+    };
+    const iconName = icons[type] || icons['info'];
+
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.textContent = message;
+    toast.innerHTML = `<i data-lucide="${iconName}"></i> <span>${message}</span>`;
     container.appendChild(toast);
+
+    if (window.lucide) {
+        window.lucide.createIcons({ root: toast });
+    }
 
     setTimeout(() => {
         toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 250);
-    }, 3000);
+        toast.style.transform = window.innerWidth <= 768 ? 'translateY(120%)' : 'translateX(120%)';
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Theme Toggle Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            let currentTheme = document.documentElement.getAttribute('data-theme');
+            let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    }
+
     const newsContainer = document.getElementById('news-container');
     const featuredContainer = document.getElementById('featured-container');
     const trendingContainer = document.getElementById('trending-container');
@@ -48,6 +71,12 @@ document.addEventListener('DOMContentLoaded', () => {
             art.image_url ||
             'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1500';
 
+        const guestNote = window.isAuthenticated === 'false' ? `
+            <div class="guest-note">
+                Está a navegar como visitante. Faça login para guardar artigos e personalizar o feed.
+            </div>
+        ` : '';
+
         modalBody.innerHTML = `
             <div class="modal-meta">
                 <span class="source-tag">${art.source ?? ''}</span>
@@ -68,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="modal-text ai-text">${art.summary || 'Resumo indisponível para esta notícia.'}</div>
                 </div>
-
+                ${guestNote}
                 <div class="modal-footer-actions">
                     <a href="${art.url ?? '#'}" target="_blank" rel="noreferrer" class="btn-primary read-full">Ler notícia no site original</a>
                     <button type="button" class="btn-secondary fav-btn" data-action="favorite" data-article="${safeJsonEncode(art)}">
@@ -87,6 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(art),
             });
+
+            const contentType = res.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                showToast('Faça login para guardar favoritos.', 'info');
+                return;
+            }
+
             const data = await res.json();
             if (data?.success) showToast('Adicionado aos favoritos.', 'success');
             else showToast('Já estava nos favoritos (ou ocorreu um erro).', 'info');
@@ -221,11 +257,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    if (searchBtn && searchInput) {
-        searchBtn.addEventListener('click', () => window.fetchNews(searchInput.value));
+    if (searchInput) {
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') window.fetchNews(searchInput.value);
         });
+    }
+    
+    if (searchBtn) {
+        searchBtn.addEventListener('click', () => window.fetchNews(searchInput.value));
     }
 
     const categoriesWrapper = document.querySelector('.categories-nav-wrapper');
@@ -325,5 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    window.fetchNews();
+    const initialActivePill = document.querySelector('.category-pill.active');
+    const initialCat = initialActivePill ? (initialActivePill.getAttribute('data-category') || '') : '';
+    window.fetchNews(initialCat);
 });
