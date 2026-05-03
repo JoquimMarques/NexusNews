@@ -9,62 +9,23 @@ function safeJsonDecode(str) {
         return null;
     }
 }
-const themeToggleBtn = document.getElementById('theme-toggle');
 
-if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-        // Alterna a classe 'dark' no elemento raiz (HTML)
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        }
-
-        // Opcional: Recriar ícones do Lucide se necessário
-        if (window.lucide) lucide.createIcons();
-    });
-}
 window.showToast = function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
 
-    const icons = {
-        'success': 'check-circle',
-        'error': 'alert-circle',
-        'info': 'info'
-    };
-    const iconName = icons[type] || icons['info'];
-
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `<i data-lucide="${iconName}"></i> <span>${message}</span>`;
+    toast.textContent = message;
     container.appendChild(toast);
-
-    if (window.lucide) {
-        window.lucide.createIcons({ root: toast });
-    }
 
     setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = window.innerWidth <= 768 ? 'translateY(120%)' : 'translateX(120%)';
-        setTimeout(() => toast.remove(), 400);
-    }, 4000);
+        setTimeout(() => toast.remove(), 250);
+    }, 3000);
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Theme Toggle Logic
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            let currentTheme = document.documentElement.getAttribute('data-theme');
-            let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-    }
-
     const newsContainer = document.getElementById('news-container');
     const featuredContainer = document.getElementById('featured-container');
     const trendingContainer = document.getElementById('trending-container');
@@ -87,12 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
             art.image_url ||
             'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1500';
 
-        const guestNote = window.isAuthenticated === 'false' ? `
-            <div class="guest-note">
-                Está a navegar como visitante. Faça login para guardar artigos e personalizar o feed.
-            </div>
-        ` : '';
-
         modalBody.innerHTML = `
             <div class="modal-meta">
                 <span class="source-tag">${art.source ?? ''}</span>
@@ -113,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="modal-text ai-text">${art.summary || 'Resumo indisponível para esta notícia.'}</div>
                 </div>
-                ${guestNote}
+
                 <div class="modal-footer-actions">
                     <a href="${art.url ?? '#'}" target="_blank" rel="noreferrer" class="btn-primary read-full">Ler notícia no site original</a>
                     <button type="button" class="btn-secondary fav-btn" data-action="favorite" data-article="${safeJsonEncode(art)}">
@@ -132,13 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(art),
             });
-
-            const contentType = res.headers.get('content-type') || '';
-            if (!contentType.includes('application/json')) {
-                showToast('Faça login para guardar favoritos.', 'info');
-                return;
-            }
-
             const data = await res.json();
             if (data?.success) showToast('Adicionado aos favoritos.', 'success');
             else showToast('Já estava nos favoritos (ou ocorreu um erro).', 'info');
@@ -162,16 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cabeçalho da Página
         if (mode === 'grouped') {
-                newsContainer.className = 'feed-sections';
-                // Populate a small header area
-                if (featuredContainer) {
-                    featuredContainer.innerHTML = `
-                        <section class="all-header">
-                            <h1 class="all-title">NexusNews Terminal</h1>
-                            <p class="all-subtitle">Fluxo de notícias em tempo real sintetizado por Nexus AI.</p>
-                        </section>
-                    `;
-                }
+            newsContainer.className = 'feed-sections';
+            featuredContainer.innerHTML = `
+                <section class="all-header">
+                    <h1 class="all-title">NexusNews Terminal</h1>
+                    <p class="all-subtitle">Fluxo de notícias em tempo real sintetizado por Nexus AI.</p>
+                </section>
+            `;
             
             newsContainer.innerHTML = sections.map((sec) => `
                 <section class="category-section" data-section="${sec.category}">
@@ -201,30 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Secção de Grandes Destaques Globais no fundo
             if (payload.trending && payload.trending.length > 0) {
-                // also populate featured carousel if present
-                const featuredCarousel = document.getElementById('featured-carousel');
-                const featuredSlides = document.getElementById('featured-container') || document.getElementById('featured-container');
-                if (featuredSlides) {
-                    featuredSlides.innerHTML = payload.trending.map(art => `
-                        <div class="slide js-open-article" data-article="${safeJsonEncode(art)}">
-                            <img src="${art.image_url || 'https://via.placeholder.com/1200x700'}" alt="">
-                            <div class="absolute bottom-4 left-4 text-white">
-                                <span class="bg-black/60 px-3 py-1 rounded text-xs font-bold">${art.category || art.source || 'Destaque'}</span>
-                                <h3 class="text-2xl font-bold mt-2">${art.title}</h3>
-                                <p class="mt-1 text-sm opacity-90">${art.summary ? art.summary.substring(0,140) : ''}</p>
-                            </div>
-                        </div>
-                    `).join('');
-
-                    // Setup controls
-                    const prev = document.getElementById('featured-prev');
-                    const next = document.getElementById('featured-next');
-                    if (prev && next) {
-                        prev.addEventListener('click', () => { featuredSlides.scrollBy({left: -featuredSlides.clientWidth * 0.6, behavior: 'smooth'}); });
-                        next.addEventListener('click', () => { featuredSlides.scrollBy({left: featuredSlides.clientWidth * 0.6, behavior: 'smooth'}); });
-                    }
-                }
-
                 newsContainer.innerHTML += `
                     <section class="bottom-highlights-section">
                         <div class="category-section-header">
@@ -300,14 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    if (searchInput) {
+    if (searchBtn && searchInput) {
+        searchBtn.addEventListener('click', () => window.fetchNews(searchInput.value));
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') window.fetchNews(searchInput.value);
         });
-    }
-    
-    if (searchBtn) {
-        searchBtn.addEventListener('click', () => window.fetchNews(searchInput.value));
     }
 
     const categoriesWrapper = document.querySelector('.categories-nav-wrapper');
@@ -407,7 +325,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const initialActivePill = document.querySelector('.category-pill.active');
-    const initialCat = initialActivePill ? (initialActivePill.getAttribute('data-category') || '') : '';
-    window.fetchNews(initialCat);
+    window.fetchNews();
 });

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Navegação de Categorias Real -->
+    <nav class="categories-nav-wrapper">
+        <button class="carousel-btn prev" type="button" data-action="carousel-prev" aria-label="Anterior">
+            <i data-lucide="chevron-left"></i>
+        </button>
+        <div class="categories-nav carousel-container" aria-label="Categorias">
+            {% for cat in ['Tudo', 'Mundo', 'Economia', 'Tecnologia', 'IA', 'Ciência', 'Saúde', 'Gaming', 'Cultura', 'Cinema', 'Desporto'] %}
+                <a href="#" class="category-pill {% if loop.first %}active{% endif %}" data-category="{{ cat }}">{{ cat }}</a>
+            {% endfor %}
+        </div>
+        <button class="carousel-btn next" type="button" data-action="carousel-next" aria-label="Próximo">
+            <i data-lucide="chevron-right"></i>
+        </button>
+    </nav>
+
+    <div class="main-content-full">
+        <!-- Header Dinâmico -->
+        <div id="featured-container">
+            <!-- Injetado via JS -->
+        </div>
+
+        <!-- Feed de Notícias -->
+        <div id="news-container">
+            <!-- Injetado via JS -->
+        </div>
+    </div>
+</div>
+{% endblock %}

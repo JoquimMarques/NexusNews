@@ -12,11 +12,9 @@ def create_app(config_class=Config):
     Fábrica de Aplicação Flask.
     Configura a aplicação, inicializa extensões e regista Blueprints.
     """
-    # ANTES: static_folder='../frontend/static/css'
-# DEPOIS (O Correto):
     app = Flask(__name__, 
-            template_folder='../frontend/templates', 
-            static_folder='../frontend/static')
+                template_folder='../frontend/templates', 
+                static_folder='../frontend/static')
     app.config.from_object(config_class)
 
     db.init_app(app)

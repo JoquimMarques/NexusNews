@@ -7,7 +7,7 @@ load_dotenv()
 class Config:
     """Configurações centrais da aplicação."""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-me'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///database/news.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///../database/news.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Configurações para APIs de Notícias (ex: NewsAPI)

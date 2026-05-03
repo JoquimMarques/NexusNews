@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="profile-wrapper">
+        <h1>Olá, {{ current_user.username }}!</h1>
+        <p>Esta é a sua central de inteligência.</p>
+        
+        <div class="profile-grid">
+            <div class="profile-card">
+                <h3>Suas Preferências</h3>
+                <p>{{ current_user.preferences or 'Nenhuma preferência definida.' }}</p>
+                <a href="/preferences">Editar Temas →</a>
+            </div>
+            
+            <div class="profile-card">
+                <h3>Artigos Guardados</h3>
+                <p>Tem {{ current_user.favorite_articles|length }} artigos guardados nos favoritos.</p>
+                <a href="/favorites">Ver Favoritos →</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
